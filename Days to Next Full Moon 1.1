@@ -1,0 +1,78 @@
+
+'use strict';
+/**
+ * @param {String} value (for property 'text')
+ */
+//var lastString;
+//var lastb;
+//var stringIndex = 0;
+export function update() {
+ 
+  //This section loads the current date
+  let year = new Date().getFullYear();
+  let month = new Date().getMonth();
+  let date = new Date();
+  let day = date.getDate();
+
+  //This section used for troubleshooting, comment out when not in use
+  //let year = 2020;
+  //let month = 3;
+  //let day = 15;
+
+  //Julian Calendar doesn't start on January 1st. This conversion saves us work later.
+  if (month < 3) {
+        year--;
+        month += 12;
+      }
+  ++month;
+
+  //Converts date into a single numeric value
+    // We're calculating the number of days since the start of the Julian Calendar.
+    // Start by multiplying the current year by 365.25
+    // ie: 2020 * 365.25 = 737805
+    let JulianDate = year * 365.25;
+    // Then Add 30.6 for each month
+    // ie: March. 3 * 30.6 = 91.8
+    // ie: 737805 + 91.8 = 737896.8
+    JulianDate += (month * 30.6);
+    // Finally add the day of the month
+    // ie: March 15th, add 15
+    // ie: 737896.8 + 15 = 737911.8
+    JulianDate += day;
+    // Subtract this number to align our calendar to the beginning of the Julian calendar
+    // Since you're curious, this number is 1900(365.25)+2(30.6)+1. Or February 2nd 1900
+    // Our March 15th 2020 example results in 43872.71
+    JulianDate -= 694039.09;
+
+  //Calculates Current Day in Lunar Cycle
+    // Divide (the interger) of our Julian Date by the length of a lunar cycle, 29 and a half days
+    let MoonPhase = parseInt(JulianDate / 29.5305882);	
+    // This gets us a number between 0 and 29.5, in other words, what day we currently are on in a lunar cycle
+    Moonphase -= (Moonphase * 29.5305882)                
+    //The new jd value is how far we are in the current lunar cycle.  Full moons fall on 14, 
+  
+  //Calculates Days until next full moon
+    // if we passed a full moon, then we need to rollover to 0 before adding 14
+    // if we have not passed a full moon, we simply need to subtract 14
+    // worth noting that the 14 number SHOULD be 14.265... but for some reason 14 gives me fewer rounding errors
+    let DaysToFullMoon = 0;
+    if(MoonPhase>14){
+	    DaysToFullMoon += (29.5305882 - MoonPhase + 14); 
+    }else{
+  	  DaysToFullMoon += (14 - MoonPhase);
+    }
+  
+
+  //Rounding errors are inevitable. Especially with time zones. This section pads for
+  //full moon detection, because false positives are more fun than false negatives.  
+    if(DaysToFullMoon < 1.5 || DaysToFullMoon >28){
+      thisLayer.text = "Full"; //Display Full if b is between 0.0 and 1.5
+    }else{
+      thisLayer.text = parseInt(DaysToFullMoon);
+    }
+  
+//Updates string
+//if (lastb != b) {
+//	lastb = b;
+//  }
+}
